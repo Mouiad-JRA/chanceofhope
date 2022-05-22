@@ -30,7 +30,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     search_fields = ['first_name', 'last_name', 'username']
 
     def has_add_permission(self, request):
-        return False
+        return True
 
     def has_change_permission(self, request, obj=None):
         return True

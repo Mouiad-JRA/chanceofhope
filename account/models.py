@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -8,6 +8,12 @@ from tinymce import models as tinymce_models
 
 
 class CustomUser(AbstractUser):
+    SEX_TYPE_MALE = 'M'
+    SEX_TYPE_FEMALE = 'F'
+    SEX_TYPE_CHOICES = [
+        (SEX_TYPE_MALE, 'Male'),
+        (SEX_TYPE_FEMALE, 'Female'),
+    ]
     phone = PhoneNumberField(blank=False, null=True)
     nationality = CountryField(blank=False, null=True)
     place_of_residence = CountryField(blank=False, null=True)
@@ -17,6 +23,18 @@ class CustomUser(AbstractUser):
     )
     description = tinymce_models.HTMLField(blank=True, null=True)
     approved = models.BooleanField(_("Is Approved"), default=False, blank=True)
+    sex = models.CharField(_("Sex"), choices=SEX_TYPE_CHOICES, default='F', max_length=1)
+    profile_picture = models.ImageField(upload_to='images', null=True)
+    email = models.EmailField(_('Email'), unique=True, blank=False, null=True,
+                              error_messages={
+                                  'unique': "A user with that email already exists.",
+                              })
+    age = models.PositiveIntegerField(_('age'), blank=False, null=True,
+                                      error_messages={
+                                          'Negative integer': "Please enter a Valid age",
+                                      })
+
+    objects = UserManager()
 
     class Meta:
         verbose_name = _("User")
