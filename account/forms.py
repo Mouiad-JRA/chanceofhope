@@ -1,6 +1,8 @@
 from django import forms
-from django_phonenumbers.form.fields import PhoneNumberField
+from django.contrib.auth import authenticate
 
+from phonenumber_field.modelfields import PhoneNumberField
+from django.utils.translation import gettext_lazy as _
 from account.models import CustomUser
 
 
@@ -11,13 +13,7 @@ class UserCreationForm(forms.ModelForm):
             field.required = True
             field.widget.attrs["required"] = "required"
 
-    phone = PhoneNumberField(
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone"}),
-        error_messages={
-            "required": "Please fill in the details.",
-            "invalid": "Enter a valid " "phone number " "along with " "country code",
-        },
-    )
+    phone = PhoneNumberField()
     username = forms.CharField(
         max_length=50,
         widget=forms.TextInput(
@@ -59,19 +55,6 @@ class UserCreationForm(forms.ModelForm):
         max_length=50,
         widget=forms.PasswordInput(
             attrs={"class": "form-control", "placeholder": "Password confirmation"}
-        ),
-        error_messages={"required": "Please fill in the details."},
-    )
-    age = forms.IntegerField(
-        widget=forms.IntegerField(
-            attrs={"class": "form-control", "placeholder": "Your age"}
-        ),
-        error_messages={"required": "Please fill in the details."},
-    )
-    sex = forms.CharField(
-        max_length=1,
-        widget=forms.CharField(
-            attrs={"class": "form-control", "placeholder": "Your gender"}
         ),
         error_messages={"required": "Please fill in the details."},
     )
@@ -141,23 +124,11 @@ class UserCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
-
-        # phone = self.cleaned_data["phone"]
-        # dob = self.cleaned_data["dob"]
-        #
-        # place_of_residence = self.cleaned_data["place_of_residence"]
-        # address = self.cleaned_data["address"]
-        #
-        # description = self.cleaned_data["description"]
-        # training = self.cleaned_data["training"]
-        #
-        #
-        # references = self.cleaned_data["references"]
-        # nationality = self.cleaned_data["nationality"]
-
+        custom_user = CustomUser.objects.create(user)
+        # TODO: Fix the bug with not saving the user and the error when add user from admin
         if commit:
-            user.save()
-        return user
+            custom_user.save()
+        return custom_user
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -182,3 +153,39 @@ class UserCreationForm(forms.ModelForm):
 
         if password != confirm_password:
             raise forms.ValidationError("password and confirm password does not match")
+
+
+class UserLoginForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(
+        label=_("Password"),
+        strip=False,
+        widget=forms.PasswordInput,
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
+        self.user = None
+        self.fields['email'].label = _("Email")
+        self.fields['email'].widget.attrs.update({'placeholder': 'Enter Email'})
+        self.fields['password'].widget.attrs.update({'placeholder': 'Enter Password'})
+
+    def clean(self, *args, **kwargs):
+        email = self.cleaned_data.get("email")
+        password = self.cleaned_data.get("password")
+
+        if email and password:
+            self.user = authenticate(self.request, username=email, password=password)
+
+            if self.user is None:
+                raise forms.ValidationError("User Does Not Exist.")
+            if not self.user.check_password(password):
+                raise forms.ValidationError("Password Does not Match.")
+            if not self.user.is_active:
+                raise forms.ValidationError("User is not Active.")
+
+        return super(UserLoginForm, self).clean(*args, **kwargs)
+
+    def get_user(self):
+        return self.user

@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'django_countries',
     'tinymce',
-
+    'bootstrap5',
     'account',
 ]
 

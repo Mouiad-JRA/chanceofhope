@@ -1,0 +1,18 @@
+{% load static bootstrap5 i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register To our site</title>
+</head>
+<body>
+<form action="{% url 'account:user-login' %}" method="POST"> {% csrf_token %}
+    {% bootstrap_form form %}
+    <div class="row form-group">
+        <div class="col-md-12">
+            <input type="submit" value="Register" class="btn btn-primary btn-md text-white">
+        </div>
+    </div>
+</form>
+</body>
+</html>

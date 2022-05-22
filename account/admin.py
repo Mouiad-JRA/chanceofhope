@@ -15,7 +15,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         "dob",
         "phone",
     )
-    readonly_fields = ["password", "last_login"]
+    # readonly_fields = ["password", "last_login"]
     list_filter = ("nationality", )
 
     custom_list_display = (
