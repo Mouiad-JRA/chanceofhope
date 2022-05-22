@@ -37,6 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+
+    'phonenumber_field',
+    'django_countries',
+    'tinymce',
+
+    'account',
 ]
 
 MIDDLEWARE = [
@@ -50,7 +57,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'chanceofhope.urls'
-
+AUTH_USER_MODEL = 'account.CustomUser'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
