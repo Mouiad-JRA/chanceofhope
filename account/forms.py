@@ -122,14 +122,6 @@ class UserCreationForm(forms.ModelForm):
             )
         }
 
-    def save(self, commit=True):
-        user = super(UserCreationForm, self).save(commit=False)
-        custom_user = CustomUser.objects.create(user)
-        # TODO: Fix the bug with not saving the user and the error when add user from admin
-        if commit:
-            custom_user.save()
-        return custom_user
-
     def clean_email(self):
         email = self.cleaned_data["email"]
         try:
@@ -153,6 +145,80 @@ class UserCreationForm(forms.ModelForm):
 
         if password != confirm_password:
             raise forms.ValidationError("password and confirm password does not match")
+
+
+class UserProfileUpdateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UserProfileUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update(
+            {
+                'placeholder': 'Enter username',
+            }
+        )
+        self.fields['first_name'].widget.attrs.update(
+            {
+                'placeholder': 'Enter First Name',
+            }
+        )
+        self.fields['last_name'].widget.attrs.update(
+            {
+                'placeholder': 'Enter Last Name',
+            }
+        )
+        self.fields['email'].widget.attrs.update(
+            {
+                'placeholder': 'Email',
+            }
+        )
+        self.fields['phone'].widget.attrs.update(
+            {
+                'placeholder': 'Phone Number',
+            }
+        )
+        self.fields['age'].widget.attrs.update(
+            {
+                'placeholder': 'Age',
+            }
+        )
+        self.fields['sex'].widget.attrs.update(
+            {
+                'placeholder': 'sex',
+            }
+        )
+        self.fields['dob'].widget.attrs.update(
+            {
+                'placeholder': 'dob',
+            }
+        )
+        self.fields['description'].widget.attrs.update(
+            {
+                'placeholder': 'description',
+            }
+        )
+        self.fields['address'].widget.attrs.update(
+            {
+                'placeholder': 'address',
+            }
+        )
+        self.fields['place_of_residence'].widget.attrs.update(
+            {
+                'placeholder': 'place of residence',
+            }
+        )
+        self.fields['nationality'].widget.attrs.update(
+            {
+                'placeholder': 'nationality',
+            }
+        )
+
+    class Meta:
+        model = CustomUser
+        fields = ["username", "first_name", "last_name", "email", "age", "sex", "dob", "description", "address",
+                  "place_of_residence",
+                  "nationality", "profile_picture",
+
+                  "phone", ]
 
 
 class UserLoginForm(forms.Form):

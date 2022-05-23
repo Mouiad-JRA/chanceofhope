@@ -1,11 +1,13 @@
 from django.contrib import admin
 
 # Register your models here.
+from account.forms import UserProfileUpdateForm
 from account.models import CustomUser
 
 
 class CustomUserAdmin(admin.ModelAdmin):
     # model = CustomUser
+    form = UserProfileUpdateForm
     list_display = (
         "username",
         "first_name",
