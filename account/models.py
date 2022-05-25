@@ -8,6 +8,7 @@ from tinymce import models as tinymce_models
 
 
 class CustomUser(AbstractUser):
+    # username = None
     SEX_TYPE_MALE = 'M'
     SEX_TYPE_FEMALE = 'F'
     SEX_TYPE_CHOICES = [
