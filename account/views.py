@@ -2,6 +2,7 @@ from django.contrib import auth, messages
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, FormView, RedirectView
@@ -77,7 +78,7 @@ class LogoutView(RedirectView):
 
 class ChangePasswordView(LoginRequiredMixin, TemplateView):
     form_class = ChangePasswordForm
-    success_url = '/'
+    success_url = reverse_lazy("/") # TODO: fix redirect url after login cause it doesn't work
 
     def get(self, request, *args, **kwargs):
         form = self.form_class(self.request.user)
