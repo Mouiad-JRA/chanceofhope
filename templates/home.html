@@ -7,6 +7,7 @@
 <body>
  {% if request.user.is_authenticated %}
 Hello {{ request.user.username }}
+     <a href="{% url "account:reset-password" %}"> Reset Password </a>
 {% else %}
 Hello Anonymous
      <a href="{% url "account:user-register" %}"> Register </a>

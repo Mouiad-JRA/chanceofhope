@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.forms import PasswordChangeForm
 
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
@@ -256,3 +257,19 @@ class UserLoginForm(forms.Form):
 
     def save(self):
         return CustomUser.objects.get(email=self.cleaned_data["login"])
+
+
+class ChangePasswordForm(PasswordChangeForm):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(user, *args, **kwargs)
+        self.fields['old_password'].widget.attrs.update({'class': 'form-control', 'placeholder': "Old Password"})
+        self.fields['new_password1'].widget.attrs.update({'class': 'form-control', 'placeholder': "New Password"})
+        self.fields['new_password2'].widget.attrs.update({'class': 'form-control', 'placeholder': "New Password"})
+
+    def save(self, commit=True):
+        password = self.cleaned_data["new_password1"]
+        self.user.set_password(password)
+        if commit:
+            self.user.save()
+        return self.user
