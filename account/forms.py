@@ -230,7 +230,6 @@ class UserLoginForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop("request")
         super().__init__(*args, **kwargs)
         self.user = None
         self.fields['email'].label = _("Email")
@@ -242,16 +241,18 @@ class UserLoginForm(forms.Form):
         password = self.cleaned_data.get("password")
 
         if email and password:
-            self.user = authenticate(self.request, username=email, password=password)
+            self.user = CustomUser.objects.filter(email=email).first()
 
             if self.user is None:
                 raise forms.ValidationError("User Does Not Exist.")
+
             if not self.user.check_password(password):
                 raise forms.ValidationError("Password Does not Match.")
-            if not self.user.is_active:
-                raise forms.ValidationError("User is not Active.")
 
-        return super(UserLoginForm, self).clean(*args, **kwargs)
+        return super(UserLoginForm, self).clean()
 
     def get_user(self):
         return self.user
+
+    def save(self):
+        return CustomUser.objects.get(email=self.cleaned_data["login"])

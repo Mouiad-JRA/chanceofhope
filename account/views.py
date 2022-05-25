@@ -1,4 +1,5 @@
 from django.contrib import auth, messages
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 
@@ -42,43 +43,24 @@ class UserRegistrationView(CreateView):
 
 
 class LoginView(FormView):
-    """
-        Provides the ability to login as a user with an email and password
-    """
     success_url = '/'
     form_class = UserLoginForm
     template_name = 'accounts/login.html'
-
     extra_context = {
-        'title': 'Login'
+        'title': 'login'
     }
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return HttpResponseRedirect(self.get_success_url())
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_success_url(self):
-        if 'next' in self.request.GET and self.request.GET['next'] != '':
-            return self.request.GET['next']
-        else:
-            return self.success_url
-
-    def get_form_class(self):
-        return self.form_class
-
     def form_valid(self, form):
-        auth.login(self.request, form.get_user())
-        return HttpResponseRedirect(self.get_success_url())
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+        user = authenticate(email=email, password=password)
 
-    def form_invalid(self, form):
-        """If the form is invalid, render the invalid form."""
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_form_kwargs(self):
-        kwargs = super(LoginView, self).get_form_kwargs()
-        kwargs.update({'request': self.request})
-        return kwargs
+        # Check here if the user is an admin
+        if user is not None and user.is_active:
+            login(self.request, user)
+            return HttpResponseRedirect(self.success_url)
+        else:
+            return self.form_invalid(form)
 
 
 class LogoutView(RedirectView):
