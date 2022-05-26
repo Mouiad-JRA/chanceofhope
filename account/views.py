@@ -90,6 +90,6 @@ class ChangePasswordView(LoginRequiredMixin, TemplateView):
             user = form.save()
             update_session_auth_hash(request, user)
             self.request.user.save(update_fields=['password'])
-            return render(request, 'accounts/password.html', {'form': form, 'password_changed': True})
+            return redirect('/')
         else:
             return render(request, 'accounts/password.html', {'form': form, 'password_changed': False})
