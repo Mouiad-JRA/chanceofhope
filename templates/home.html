@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home page</title>
+</head>
+<body>
+ {% if request.user.is_authenticated %}
+Hello {{ request.user.username }}
+     <a href="{% url "account:reset-password" %}"> Reset Password </a>
+{% else %}
+Hello Anonymous
+     <a href="{% url "account:user-register" %}"> Register </a>
+{% endif %}
+</body>
+</html>

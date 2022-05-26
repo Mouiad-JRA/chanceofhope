@@ -1,12 +1,13 @@
 from django.contrib import auth, messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-
-# Create your views here.
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, FormView, RedirectView
 
-from account.forms import UserCreationForm, UserLoginForm
+from account.forms import UserCreationForm, UserLoginForm, ChangePasswordForm
 from account.models import CustomUser
 
 
@@ -73,3 +74,22 @@ class LogoutView(RedirectView):
         auth.logout(request)
         messages.success(request, 'You are now logged out from My site :)')
         return super(LogoutView, self).get(request, *args, **kwargs)
+
+
+class ChangePasswordView(LoginRequiredMixin, TemplateView):
+    form_class = ChangePasswordForm
+    success_url = reverse_lazy("/") # TODO: fix redirect url after login cause it doesn't work
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(self.request.user)
+        return render(request, 'accounts/password.html', {'form': form, })
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            self.request.user.save(update_fields=['password'])
+            return redirect('/')
+        else:
+            return render(request, 'accounts/password.html', {'form': form, 'password_changed': False})
