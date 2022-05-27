@@ -7,8 +7,8 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, FormView, RedirectView
 
-from account.forms import UserCreationForm, UserLoginForm, ChangePasswordForm
-from account.models import CustomUser
+from accounts.forms import UserCreationForm, UserLoginForm, ChangePasswordForm
+from accounts.models import CustomUser
 
 
 class UserRegistrationView(CreateView):
@@ -38,7 +38,7 @@ class UserRegistrationView(CreateView):
             password = form.cleaned_data.get("password1")
             user.set_password(password)
             user.save()
-            return redirect('account:user-login')
+            return redirect('accounts:account_signup')
         else:
             return render(request, 'accounts/register.html', {'form': form})
 
@@ -78,7 +78,7 @@ class LogoutView(RedirectView):
 
 class ChangePasswordView(LoginRequiredMixin, TemplateView):
     form_class = ChangePasswordForm
-    success_url = reverse_lazy("/") # TODO: fix redirect url after login cause it doesn't work
+    success_url = reverse_lazy("/")
 
     def get(self, request, *args, **kwargs):
         form = self.form_class(self.request.user)

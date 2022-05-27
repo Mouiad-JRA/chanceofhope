@@ -4,7 +4,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
-from account.models import CustomUser
+from accounts.models import CustomUser
 
 
 class UserCreationForm(forms.ModelForm):

@@ -21,7 +21,8 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name="home.html")),
-    path('', include('account.urls')),
+    path('user', include('accounts.urls')),
+# path("accounts/", include("allauth.urls")),
 ]
 if settings.DEBUG:
     from django.conf.urls.static import static

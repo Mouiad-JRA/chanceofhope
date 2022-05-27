@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from account.forms import UserProfileUpdateForm
-from account.models import CustomUser
+from accounts.forms import UserProfileUpdateForm
+from accounts.models import CustomUser
 
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -16,6 +16,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         "place_of_residence",
         "dob",
         "phone",
+        "password",
     )
     # readonly_fields = ["password", "last_login"]
     list_filter = ("nationality", )
@@ -28,6 +29,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         "dob",
         "phone",
         "email",
+        "password",
     )
     search_fields = ['first_name', 'last_name', 'username']
 
